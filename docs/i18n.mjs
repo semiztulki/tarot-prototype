@@ -26,6 +26,13 @@ export const UI={
 };
 
 Object.assign(UI.ru,{
+ libraryText:'Сюжеты, значения и символика 78 карт Уэйта — Смит. Откройте карту, чтобы рассмотреть её детали.',
+ librarySearch:'Поиск по названиям, значениям и символам',librarySearchPlaceholder:'Название, значение или символ: например, гранат',foundCards:'Найдено',noLibraryCards:'Таких карт не нашлось. Попробуйте другое название или символ.',
+ guideMeaning:'Значение',guideSymbols:'Символика',guideSource:'Уэйт',cardSections:'Разделы описания карты',sceneTitle:'Что изображено',
+ guideReadingNote:'Современное прочтение рисунка. Исторические значения приведены в разделе «Уэйт».',
+ symbolNote:'Уэйт объяснил не каждую деталь. Ниже различаются его пояснения и возможные прочтения рисунка.',possibleReading:'Возможное прочтение',waiteExplains:'Уэйт',
+ historicalNote:'Первоначальные значения могут отличаться от современного прочтения. Здесь сохранено краткое изложение со ссылками на страницы книги.',imageInBook:'Об изображении в книге',
+ previousCard:'Предыдущая карта',nextCard:'Следующая карта',cardPosition:'Положение в подборке',zoomCard:'Рассмотреть крупнее',
  sourceTitle:'Колода и источники',sources:'Источники',sourceBase:'Базовое значение по А. Э. Уэйту',editorialContext:'К вашему вопросу · пояснение сервиса',
  sourceBook:'The Pictorial Key to the Tarot, издание 1922 года',sourcePart:'Часть III',sourceSection:'§',sourcePage:'с.',artCredit:'Иллюстрация: Памела Колман Смит, 1910',viewArtSource:'Источник изображения',
  sourceBookText:'Базовые значения карт — современные краткие изложения по книге Артура Эдварда Уэйта. К каждой карте привязаны раздел и страницы исторического издания.',
@@ -38,6 +45,13 @@ Object.assign(UI.ru,{
  historyNotice:'База значений обновлена с момента сохранения этой записи. Ниже показано текущее изложение; ваши карты и заметки сохранены.'
 });
 Object.assign(UI.en,{
+ libraryText:'Scenes, meanings and symbols across all 78 Rider–Waite–Smith cards. Open a card to explore its details.',
+ librarySearch:'Search names, meanings and symbols',librarySearchPlaceholder:'A name, meaning or symbol: for example, pomegranate',foundCards:'Found',noLibraryCards:'No cards found. Try another name or symbol.',
+ guideMeaning:'Meaning',guideSymbols:'Symbols',guideSource:'Waite',cardSections:'Card description sections',sceneTitle:'The scene',
+ guideReadingNote:'A modern reading of the image. Historical meanings appear in the Waite section.',
+ symbolNote:'Waite did not explain every detail. His explanations and possible readings of the image are distinguished below.',possibleReading:'Possible reading',waiteExplains:'Waite',
+ historicalNote:'The original meanings may differ from a modern reading. These concise summaries retain links to the book’s pages.',imageInBook:'The image in the book',
+ previousCard:'Previous card',nextCard:'Next card',cardPosition:'Position in the selection',zoomCard:'View a larger image',
  sourceTitle:'The deck and its sources',sources:'Sources',sourceBase:'Base meaning adapted from A. E. Waite',editorialContext:'For your question · service commentary',
  sourceBook:'The Pictorial Key to the Tarot, 1922 edition',sourcePart:'Part III',sourceSection:'§',sourcePage:'p.',artCredit:'Illustration: Pamela Colman Smith, 1910',viewArtSource:'Image source',
  sourceBookText:'The base meanings are concise modern summaries of Arthur Edward Waite’s book. Each card is linked to its section and pages in the historical edition.',
@@ -49,3 +63,4 @@ Object.assign(UI.en,{
  aboutContent:'The deck uses Pamela Colman Smith’s historical illustrations from 1910. Base meanings are adapted from A. E. Waite’s book; topic commentary was prepared separately for the prototype.',
  historyNotice:'The meanings have been updated since this entry was saved. The current adaptation is shown below; your cards and notes have been preserved.'
 });
+

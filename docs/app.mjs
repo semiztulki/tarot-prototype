@@ -2,6 +2,8 @@ import {CARDS,CARD_BY_ID,SPREADS,TOPICS,INTENTS,SUITS,CONTENT_VERSION} from './d
 import {drawCards,interpretReading,validateReading,loadJournal,spreadById,local} from './engine.mjs';
 import {UI} from './i18n.mjs';
 import {art,cardBack} from './art.mjs';
+import {CARD_GUIDES,searchLibraryCards} from './data/card-guides.mjs';
+import {symbolIcon} from './symbol-icons.mjs';
 
 const $=s=>document.querySelector(s),app=$('#app'),modal=$('#modal');
 const STORAGE='arcana.tarot-prototype.journal.v1',LANGUAGE='arcana.tarot-prototype.language';
@@ -56,8 +58,10 @@ function filteredCards(query,suit='all'){
  const q=query.trim().toLocaleLowerCase().replaceAll('ё','е');
  return CARDS.filter(c=>(suit==='all'||c.suit===suit)&&`${c.name.ru} ${c.name.en}`.toLocaleLowerCase().replaceAll('ё','е').includes(q));
 }
-function catalogueGrid(){const cards=filteredCards(state.query,state.suit);return cards.length?cards.map(c=>`<button class="catalogue-card" data-action="card-detail" data-card="${c.id}" aria-label="${local(c.name,state.lang)}">${art(c)}<strong>${local(c.name,state.lang)}</strong><small>${local(SUITS[c.suit],state.lang)}</small></button>`).join(''):`<p class="empty-results full-width">${t('noCards')}</p>`;}
-function libraryPage(){return `<section class="page-intro"><p class="eyebrow">ARCANA · ${t('library').toUpperCase()}</p><h1>${t('libraryTitle')}</h1><p>${t('libraryText')}</p></section><div class="tools-row"><input type="search" id="library-search" aria-label="${t('search')}" placeholder="${t('searchPlaceholder')}" value="${esc(state.query)}"><select id="suit-filter" aria-label="${t('suitFilter')}"><option value="all">${t('allSuits')}</option>${Object.entries(SUITS).map(([id,s])=>`<option value="${id}" ${state.suit===id?'selected':''}>${s[state.lang]}</option>`).join('')}</select></div><div class="catalogue" id="catalogue-grid">${catalogueGrid()}</div>`;}
+function catalogueGrid(){const cards=searchLibraryCards(CARDS,state.query,state.suit);return cards.length?cards.map(c=>`<button class="catalogue-card" data-action="card-detail" data-card="${c.id}" aria-label="${local(c.name,state.lang)}">${art(c)}<strong>${local(c.name,state.lang)}</strong><small>${local(SUITS[c.suit],state.lang)}</small></button>`).join(''):`<p class="empty-results full-width">${t('noLibraryCards')}</p>`;}
+function libraryCount(){return `${t('foundCards')}: ${searchLibraryCards(CARDS,state.query,state.suit).length} ${t('of')} ${CARDS.length}`;}
+function updateLibrary(){ $('#catalogue-grid').innerHTML=catalogueGrid();$('#library-count').textContent=libraryCount(); }
+function libraryPage(){return `<section class="page-intro"><p class="eyebrow">ARCANA · ${t('library').toUpperCase()}</p><h1>${t('libraryTitle')}</h1><p>${t('libraryText')}</p></section><div class="tools-row"><input type="search" id="library-search" aria-label="${t('librarySearch')}" placeholder="${t('librarySearchPlaceholder')}" value="${esc(state.query)}"><select id="suit-filter" aria-label="${t('suitFilter')}"><option value="all">${t('allSuits')}</option>${Object.entries(SUITS).map(([id,s])=>`<option value="${id}" ${state.suit===id?'selected':''}>${s[state.lang]}</option>`).join('')}</select></div><p class="library-count" id="library-count" role="status" aria-live="polite">${libraryCount()}</p><div class="catalogue" id="catalogue-grid">${catalogueGrid()}</div>`;}
 function journalPage(){return `<section class="page-intro"><p class="eyebrow">ARCANA · ${t('journal').toUpperCase()}</p><h1>${t('journalTitle')}</h1><p>${t('journalText')}</p></section>${state.journal.length?`<div class="journal-tools"><button class="secondary" data-action="export-journal">${icon('download')}${t('exportJournal')}</button><button class="text-button danger" data-action="clear-journal">${t('clearJournal')}</button></div><p class="privacy-note">${icon('lock')}<span>${t('privateJournal')}</span></p><div class="journal-grid">${state.journal.map(r=>`<article class="journal-entry"><div class="entry-top"><time datetime="${esc(r.created)}">${date(r.created)}</time><span>${topicLabel(r.topic)} · ${t(r.mode==='physical'?'physicalBadge':'digitalBadge')}</span></div><h2>${spreadById(r.spread)[state.lang]}</h2>${r.question?`<p class="entry-question">${esc(r.question)}</p>`:''}<div class="mini-cards" aria-label="${r.cards.map(c=>local(CARD_BY_ID[c.id].name,state.lang)).join(', ')}">${r.cards.map(c=>`<div class="${c.reversed?'card-visual reversed':''}">${art(CARD_BY_ID[c.id])}</div>`).join('')}</div>${r.note?`<p class="entry-note">${esc(r.note)}</p>`:''}<div class="entry-actions"><button class="text-button" data-action="open-reading" data-id="${esc(r.id)}">${t('openReading')}</button><button class="delete-button" data-action="delete-reading" data-id="${esc(r.id)}" aria-label="${t('delete')} · ${date(r.created)}">${icon('trash')}</button></div></article>`).join('')}</div>`:`<div class="empty"><span aria-hidden="true">✧</span><h2>${t('journalEmpty')}</h2><p>${t('journalEmptyText')}</p><a class="primary" href="#reading">${t('heroButton')}</a></div>`}`;}
 function render(){
  document.documentElement.lang=state.lang;document.title=t('title');
@@ -70,12 +74,30 @@ function notify(message,undo=false){
 function persist(entries){try{localStorage.setItem(STORAGE,JSON.stringify(entries));state.journal=entries;return true;}catch{notify(t('storageError'));return false;}}
 function makeReading(cards){return {id:globalThis.crypto.randomUUID(),created:new Date().toISOString(),spread:state.spread,topic:state.topic,intent:state.intent,mode:state.mode,question:state.question.trim(),note:'',cards:cards.map(c=>({...c})),version:CONTENT_VERSION};}
 function showResult(){render();$('#result')?.scrollIntoView({behavior:motion(),block:'start'});}
-function showModal(content){modal.innerHTML=`<div class="modal-inner"><button class="close-modal" data-action="close-modal" aria-label="${t('back')}">×</button>${content}</div>`;if(!modal.open)modal.showModal();}
+function showModal(content,view='default'){modal.dataset.view=view;modal.innerHTML=`<div class="modal-inner"><button class="close-modal" data-action="close-modal" aria-label="${t('back')}">×</button>${content}</div>`;if(!modal.open)modal.showModal();modal.scrollTop=0;}
 function pickerGrid(){const chosen=new Set(state.manual.filter((c,i)=>c&&i!==state.pickerIndex).map(c=>c.id));const cards=filteredCards(state.pickerQuery);return cards.length?cards.map(c=>`<button class="picker-card" data-action="choose-card" data-card="${c.id}" ${chosen.has(c.id)?'disabled':''} aria-label="${esc(local(c.name,state.lang))}${chosen.has(c.id)?' · '+t('alreadyChosen'):''}">${art(c)}<span>${local(c.name,state.lang)}</span></button>`).join(''):`<p class="empty-results">${t('noCards')}</p>`;}
 function openPicker(index){state.pickerIndex=index;state.pickerQuery='';showModal(`<h2 id="modal-title">${t('pickerTitle')}</h2><p>${t('pickerText')}</p><input class="picker-input" type="search" id="picker-search" aria-label="${t('search')}" placeholder="${t('searchPlaceholder')}"><div class="picker-grid" id="picker-grid">${pickerGrid()}</div>`);$('#picker-search').focus();}
 function about(){showModal(`<div class="modal-symbol" aria-hidden="true">✧</div><h2 id="modal-title">${t('aboutTitle')}</h2><p>${t('aboutText')}</p><p>${t('aboutContent')}</p><p>${t('aboutPrivacy')}</p><div class="modal-actions"><button class="secondary" data-action="sources">${t('sources')}</button></div>`);}
 function showSources(){showModal(`<div class="modal-symbol" aria-hidden="true">✧</div><h2 id="modal-title">${t('sourceTitle')}</h2><p>${t('sourceBookText')}</p><p><a href="https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot" target="_blank" rel="noopener noreferrer">${t('sourceBook')}</a></p><p>${t('sourceArtText')}</p><p><a href="./data/rws-images.json" target="_blank" rel="noopener noreferrer">${t('imageRegister')}</a></p><p>${t('sourceEditorialText')}</p><p>${t('sourceAdaptationText')}</p>`);}
-function showCard(id){const c=CARD_BY_ID[id];if(!c)return;showModal(`<h2 id="modal-title">${local(c.name,state.lang)}</h2><div class="detail-layout"><div>${art(c)}</div><div class="detail-copy"><div class="detail-keywords">${local(c.keywords,state.lang)}</div><h3>${t('upright')}</h3><p>${local(c.upright,state.lang)}</p>${referenceHTML(c,false)}<h3>${t('reversed')}</h3><p>${local(c.reversed,state.lang)}</p>${referenceHTML(c,true)}</div></div><p class="art-credit">${t('artCredit')} · <a href="${c.artSource}" target="_blank" rel="noopener noreferrer">${t('viewArtSource')}</a></p><p class="draft-note">${t('draftNotice')}</p>`);}
+function guideReference(guide,section=guide.source.section){return `<a href="${guide.source.url}" target="_blank" rel="noopener noreferrer">${t('waiteExplains')} · ${guide.source.part===2?'II':'III'}, § ${section}</a>`;}
+function cardPanel(c,g,tab){
+ if(tab==='symbols')return `<p class="guide-note">${t('symbolNote')}</p><div class="symbol-list">${g.symbols.map(s=>`<article class="symbol-item"><div class="symbol-badge">${symbolIcon(s.icon)}</div><div><h3>${esc(local(s.title,state.lang))}</h3><p>${esc(local(s.text,state.lang))}</p><div class="symbol-basis">${s.basis==='waite'?guideReference(g,s.sourceSection):t('possibleReading')}</div></div></article>`).join('')}</div>`;
+ if(tab==='source')return `<p class="guide-note">${t('historicalNote')}</p><h3>${t('upright')}</h3><p>${esc(local(c.upright,state.lang))}</p>${referenceHTML(c,false)}<h3>${t('reversed')}</h3><p>${esc(local(c.reversed,state.lang))}</p>${referenceHTML(c,true)}<div class="guide-book"><h3>${t('imageInBook')}</h3><p>${guideReference(g)}${c.id==='major-fool'?` · ${guideReference(g,3)}`:''}</p></div>`;
+ return `<div class="guide-scene"><h3>${t('sceneTitle')}</h3><p>${esc(local(g.scene,state.lang))}</p></div><p class="guide-note">${t('guideReadingNote')}</p><h3>${t('upright')}</h3><p>${esc(local(g.upright,state.lang))}</p><h3>${t('reversed')}</h3><p>${esc(local(g.reversed,state.lang))}</p>`;
+}
+function showCard(id,tab='meaning'){
+ const c=CARD_BY_ID[id],g=CARD_GUIDES[id];if(!c||!g)return;
+ state.detailCard=id;state.detailTab=['meaning','symbols','source'].includes(tab)?tab:'meaning';
+ const matches=searchLibraryCards(CARDS,state.query,state.suit),cards=matches.some(c=>c.id===id)?matches:CARDS,index=cards.findIndex(c=>c.id===id);
+ showModal(`<div class="guide-heading"><p class="guide-suit">${esc(local(SUITS[c.suit],state.lang))} · RIDER–WAITE–SMITH</p><h2 id="modal-title">${esc(local(c.name,state.lang))}</h2></div><div class="guide-layout"><aside class="guide-art"><a href="${c.image.path}" target="_blank" rel="noopener noreferrer" aria-label="${t('zoomCard')} · ${esc(local(c.name,state.lang))}">${art(c)}</a><a class="zoom-card" href="${c.image.path}" target="_blank" rel="noopener noreferrer">${t('zoomCard')}</a><div class="detail-keywords">${esc(local(c.keywords,state.lang))}</div></aside><div class="guide-copy"><div class="guide-tabs" role="tablist" aria-label="${t('cardSections')}">${[['meaning','guideMeaning'],['symbols','guideSymbols'],['source','guideSource']].map(([key,label])=>`<button type="button" role="tab" id="guide-tab-${key}" aria-controls="guide-panel" aria-selected="${state.detailTab===key}" tabindex="${state.detailTab===key?0:-1}" data-action="guide-tab" data-tab="${key}">${t(label)}</button>`).join('')}</div><section class="guide-panel" id="guide-panel" role="tabpanel" tabindex="0" aria-labelledby="guide-tab-${state.detailTab}">${cardPanel(c,g,state.detailTab)}</section></div></div><div class="guide-navigation"><button class="secondary" data-action="guide-card" data-card="${cards[index-1]?.id||''}" ${index===0?'disabled':''}>${t('previousCard')}</button><span aria-label="${t('cardPosition')}">${index+1} / ${cards.length}</span><button class="secondary" data-action="guide-card" data-card="${cards[index+1]?.id||''}" ${index===cards.length-1?'disabled':''}>${t('nextCard')}</button></div><p class="art-credit">${t('artCredit')} · <a href="${c.artSource}" target="_blank" rel="noopener noreferrer">${t('viewArtSource')}</a></p>`,'card');
+}
+function selectGuideTab(tab,focus=false){
+ if(!state.detailCard||!['meaning','symbols','source'].includes(tab))return;
+ state.detailTab=tab;
+ for(const button of modal.querySelectorAll('[role="tab"]')){const selected=button.dataset.tab===tab;button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;}
+ const panel=$('#guide-panel');panel.setAttribute('aria-labelledby',`guide-tab-${tab}`);panel.innerHTML=cardPanel(CARD_BY_ID[state.detailCard],CARD_GUIDES[state.detailCard],tab);
+ if(focus)$(`#guide-tab-${tab}`).focus({preventScroll:true});
+}
 function download(filename,text,type='text/plain;charset=utf-8'){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function readingText(r){const result=interpretReading(r,state.lang);return ['ARCANA',spreadById(r.spread)[state.lang],date(r.created),`${t('topic')}: ${topicLabel(r.topic)}`,r.question?`${t('question')}: ${r.question}`:'','',...result.positions.flatMap(p=>[`${p.position}: ${local(p.card.name,state.lang)} (${t(p.chosen.reversed?'reversed':'upright')})`,p.base,`${t('sourceBase')}: ${p.card.source[p.chosen.reversed?'reversed':'upright'].map(page=>page.url).join(', ')}`,p.role,`${t('editorialContext')}: ${p.theme}`,'']),...result.connections,'',result.intent,'',r.note?`${t('note')}: ${r.note}`:'','',t('draftNotice')].filter(v=>v!==undefined).join('\n');}
 
@@ -137,6 +159,8 @@ document.addEventListener('click',event=>{
  if(action==='clear-journal'){showModal(`<h2 id="modal-title">${t('clearTitle')}</h2><p>${t('clearText')}</p><div class="modal-actions"><button class="primary" data-action="confirm-clear">${t('confirmClear')}</button><button class="secondary" data-action="close-modal">${t('cancel')}</button></div>`);return;}
  if(action==='confirm-clear'){if(persist([])){state.deleted=null;modal.close();render();}return;}
  if(action==='card-detail'){showCard(control.dataset.card);return;}
+ if(action==='guide-tab'){selectGuideTab(control.dataset.tab);return;}
+ if(action==='guide-card'){showCard(control.dataset.card,state.detailTab);$('#modal-title')?.setAttribute('tabindex','-1');$('#modal-title')?.focus({preventScroll:true});return;}
  if(action==='about'){about();return;}
  if(action==='sources'){showSources();return;}
  if(action==='close-modal'){modal.close();return;}
@@ -145,15 +169,22 @@ document.addEventListener('input',event=>{
  const e=event.target;
  if(e.id==='question')state.question=e.value;
  if(e.id==='note'&&state.reading)state.reading.note=e.value;
- if(e.id==='library-search'){state.query=e.value;$('#catalogue-grid').innerHTML=catalogueGrid();}
+ if(e.id==='library-search'){state.query=e.value;updateLibrary();}
  if(e.id==='picker-search'){state.pickerQuery=e.value;$('#picker-grid').innerHTML=pickerGrid();}
 });
 document.addEventListener('change',event=>{
  const e=event.target;
  if(['topic','intent'].includes(e.id)){state[e.id]=e.value;resetReading();render();$(`#${e.id}`)?.focus({preventScroll:true});}
  if(e.id==='reversals')state.reversals=e.checked;
- if(e.id==='suit-filter'){state.suit=e.value;$('#catalogue-grid').innerHTML=catalogueGrid();}
+ if(e.id==='suit-filter'){state.suit=e.value;updateLibrary();}
 });
 window.addEventListener('hashchange',()=>{const next=['journal','library'].includes(location.hash.slice(1))?location.hash.slice(1):'reading';if(next!==state.page){state.page=next;render();window.scrollTo({top:0,behavior:'instant'});}});
 modal.addEventListener('click',event=>{if(event.target===modal){const r=modal.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)modal.close();}});
+modal.addEventListener('keydown',event=>{
+ const tab=event.target.closest('[role="tab"]');if(!tab||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+ event.preventDefault();const tabs=['meaning','symbols','source'],index=tabs.indexOf(tab.dataset.tab);
+ selectGuideTab(event.key==='Home'?tabs[0]:event.key==='End'?tabs[2]:tabs[(index+(event.key==='ArrowRight'?1:2))%3],true);
+});
+modal.addEventListener('close',()=>{state.detailCard=null;});
 render();
+

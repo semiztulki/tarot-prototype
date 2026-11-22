@@ -2,7 +2,10 @@
   "revision": "rws-waite-1922-0.2",
   "checked": "2026-11-22",
   "active_system": "Rider–Waite–Smith Tarot, 78 cards",
-  "deferred_systems": ["Petit Lenormand", "Grand Lenormand"],
+  "deferred_systems": [
+    "Petit Lenormand",
+    "Grand Lenormand"
+  ],
   "sources": [
     {
       "id": "waite-pictorial-key-1922",
@@ -16,7 +19,9 @@
       "scan_record": "https://commons.wikimedia.org/wiki/File:The_Pictorial_Key_to_the_Tarot.pdf",
       "rights_statement": "Public Domain Mark; the scan record identifies public-domain status in the source country, in life-plus-70-or-shorter territories and in the United States.",
       "use": "Modernised, abridged summaries in Russian and English; not a verbatim transcription or exhaustive translation.",
-      "sections": "Part III, sections 2 and 3. Two of Cups reversed uses the separate supplementary entry in section 4, p. 290."
+      "sections": "Part III, sections 2 and 3. Two of Cups reversed uses the separate supplementary entry in section 4, p. 290.",
+      "symbolism_text": "https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot/Part_2",
+      "symbolism_sections": "Major Arcana: Part II, section 2; Fool wallet: Part II, section 3. Minor Arcana: Part III, section 2."
     },
     {
       "id": "rws-pamela-a-1910",
@@ -32,6 +37,9 @@
     "topic_prompts": "Original prototype commentary, separate from Waite's text.",
     "spread_templates": "Prototype editorial schemas, not presented as transcriptions of Waite's layouts.",
     "connections": "Six editorial pair rules and structural commentary; not attributed to Waite.",
-    "adaptation": "Historical physical appearance and gender allocations are not applied literally; medical and fatalistic wording is not used to predict health or death. The source remains available for comparison."
-  }
+    "adaptation": "Historical physical appearance and gender allocations are not applied literally; medical and fatalistic wording is not used to predict health or death. The source remains available for comparison.",
+    "illustrated_library": "78 original bilingual scene descriptions and modern readings of both orientations, separate from historical base meanings; 236 symbol notes distinguish Waite explanations from editorial visual interpretations. Independently versioned.",
+    "symbol_icons": "Original inline SVG line icons for visual navigation; not a reproduction of historical art or a source of meaning."
+  },
+  "library_revision": "rws-illustrated-guide-1.0"
 }
