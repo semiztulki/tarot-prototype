@@ -1,0 +1,37 @@
+{
+  "revision": "rws-waite-1922-0.2",
+  "checked": "2026-11-22",
+  "active_system": "Rider–Waite–Smith Tarot, 78 cards",
+  "deferred_systems": ["Petit Lenormand", "Grand Lenormand"],
+  "sources": [
+    {
+      "id": "waite-pictorial-key-1922",
+      "author": "Arthur Edward Waite",
+      "title": "The Pictorial Key to the Tarot",
+      "first_publication": 1910,
+      "edition_used": 1922,
+      "publisher": "William Rider & Son Limited, London",
+      "language": "en",
+      "text": "https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot/Part_3",
+      "scan_record": "https://commons.wikimedia.org/wiki/File:The_Pictorial_Key_to_the_Tarot.pdf",
+      "rights_statement": "Public Domain Mark; the scan record identifies public-domain status in the source country, in life-plus-70-or-shorter territories and in the United States.",
+      "use": "Modernised, abridged summaries in Russian and English; not a verbatim transcription or exhaustive translation.",
+      "sections": "Part III, sections 2 and 3. Two of Cups reversed uses the separate supplementary entry in section 4, p. 290."
+    },
+    {
+      "id": "rws-pamela-a-1910",
+      "artist": "Pamela Colman Smith",
+      "edition": "Pamela-A, 1910",
+      "manifest": "rws-images.json",
+      "rights_statement": "All 78 selected Commons file records were marked Public domain when checked. Individual source URLs and downloaded-image hashes are retained in the manifest.",
+      "use": "Local WebP copies resized within 360×640. No cropping, recolouring or redrawing."
+    }
+  ],
+  "editorial_layers": {
+    "base_meanings": "Abridged modern summaries tied to printed pages and scan pages; source alternatives are retained where relevant.",
+    "topic_prompts": "Original prototype commentary, separate from Waite's text.",
+    "spread_templates": "Prototype editorial schemas, not presented as transcriptions of Waite's layouts.",
+    "connections": "Six editorial pair rules and structural commentary; not attributed to Waite.",
+    "adaptation": "Historical physical appearance and gender allocations are not applied literally; medical and fatalistic wording is not used to predict health or death. The source remains available for comparison."
+  }
+}

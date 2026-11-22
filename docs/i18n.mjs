@@ -24,3 +24,28 @@ export const UI={
   about:'About the prototype',aboutTitle:'A little magic for everyday life',aboutText:'Arcana is a working name for an international Tarot service. This prototype includes English and Russian, online readings and help with your physical deck.',aboutContent:'The card meanings are original draft texts for testing the product. They need editorial review before a commercial release. The illustrations are our own symbolic designs rather than an exact reproduction of a traditional deck.',aboutPrivacy:'There are no accounts, payments, analytics or server uploads of your questions here. The journal stays in this browser. Other people with access to this device could read it, and clearing browser data removes the entries. Download a backup from time to time.',footer:'A little everyday magic.',footerNote:'The cards invite reflection. The choice remains yours.',cardOf:'Card',dateLocale:'en-GB',editCards:'Edit my cards',physicalBadge:'Own deck',digitalBadge:'Online',yes:'Done',
  }
 };
+
+Object.assign(UI.ru,{
+ sourceTitle:'Колода и источники',sources:'Источники',sourceBase:'Базовое значение по А. Э. Уэйту',editorialContext:'К вашему вопросу · пояснение сервиса',
+ sourceBook:'The Pictorial Key to the Tarot, издание 1922 года',sourcePart:'Часть III',sourceSection:'§',sourcePage:'с.',artCredit:'Иллюстрация: Памела Колман Смит, 1910',viewArtSource:'Источник изображения',
+ sourceBookText:'Базовые значения карт — современные краткие изложения по книге Артура Эдварда Уэйта. К каждой карте привязаны раздел и страницы исторического издания.',
+ sourceArtText:'В этой версии использованы исторические изображения колоды Уэйта — Смит, издание Pamela-A 1910 года. Для всех 78 файлов сохранены страницы Wikimedia Commons с отметкой Public Domain.',
+ sourceEditorialText:'Тематические вопросы, схемы раскладов и пояснения связей между картами подготовлены для прототипа отдельно. Они требуют дальнейшей редакторской работы.',
+ sourceAdaptationText:'Изложение сокращено и переведено современным языком. Неоднозначные значения в книге отмечаются как альтернативы. Исторические характеристики внешности, медицинские и фатальные формулировки не применяются как буквальные прогнозы.',
+ imageRegister:'Реестр всех 78 изображений',openBook:'Открыть книгу',
+ draftNotice:'Базовые значения — по Уэйту, в современном изложении. Тематические пояснения и связи — пробная редакция сервиса.',
+ aboutContent:'Колода — исторические иллюстрации Памелы Колман Смит 1910 года. Базовые значения изложены по книге А. Э. Уэйта; тематические пояснения подготовлены отдельно для прототипа.',
+ historyNotice:'База значений обновлена с момента сохранения этой записи. Ниже показано текущее изложение; ваши карты и заметки сохранены.'
+});
+Object.assign(UI.en,{
+ sourceTitle:'The deck and its sources',sources:'Sources',sourceBase:'Base meaning adapted from A. E. Waite',editorialContext:'For your question · service commentary',
+ sourceBook:'The Pictorial Key to the Tarot, 1922 edition',sourcePart:'Part III',sourceSection:'§',sourcePage:'p.',artCredit:'Illustration: Pamela Colman Smith, 1910',viewArtSource:'Image source',
+ sourceBookText:'The base meanings are concise modern summaries of Arthur Edward Waite’s book. Each card is linked to its section and pages in the historical edition.',
+ sourceArtText:'This version uses historical images from the 1910 Pamela-A edition of the Rider–Waite–Smith deck. All 78 files have recorded Wikimedia Commons source pages marked Public Domain.',
+ sourceEditorialText:'Topic prompts, spread templates and commentary connecting the cards were prepared separately for this prototype. They still need editorial development.',
+ sourceAdaptationText:'The wording has been shortened and modernised. Ambiguous source meanings are identified as alternatives. Historical physical descriptions, medical language and fatalistic wording are not applied as literal predictions.',
+ imageRegister:'Register of all 78 images',openBook:'Open the book',
+ draftNotice:'Base meanings: a modern adaptation of Waite. Topic prompts and connections: draft service commentary.',
+ aboutContent:'The deck uses Pamela Colman Smith’s historical illustrations from 1910. Base meanings are adapted from A. E. Waite’s book; topic commentary was prepared separately for the prototype.',
+ historyNotice:'The meanings have been updated since this entry was saved. The current adaptation is shown below; your cards and notes have been preserved.'
+});
